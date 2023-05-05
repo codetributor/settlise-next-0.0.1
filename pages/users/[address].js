@@ -258,14 +258,14 @@ const [ contractAddresses, setContractAddresses] =  useState([""]);
       }
     ],
     provider)
-    if(provider) {
+    if(provider && router.query.address) {
       async function fetch() {
         const addresses = await contract.getUserAddresses(router.query.address);
         setContractAddresses(addresses);
       }
       fetch();
     }
-  }, [])
+  }, [router.query.address, type])
   return (
     <main className="max-w-6xl mx-auto pb-10">
       <Header />
