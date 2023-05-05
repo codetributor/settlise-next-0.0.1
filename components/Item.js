@@ -10,6 +10,8 @@ function Item({address, type, isAccount, userAddress}) {
   const [ price, setPrice] = useState("");
   const [ seller, setSeller ] = useState("");
   const [ buyer, setBuyer ] = useState("");
+  const [ bgCard, setBgCard] = useState("bg-gray-50")
+  const [ bgCardHover, setBgCardHover ] = useState("hover:bg-gray-100")
   
   const abi = [
     {
@@ -439,11 +441,16 @@ function Item({address, type, isAccount, userAddress}) {
             const Price = await contract.getPrice();
             const Seller = await contract.getSellerAddress();
             const Buyer = await contract.getBuyerAddress();
+            const FinalSettlement = await contract.getFinalSettlement();
             setIpfs(Ipfs);
             setItem(Item);
             setPrice(Price);
             setSeller(Seller.toLowerCase())
-            setBuyer(Buyer)
+            setBuyer(Buyer.toLowerCase())
+            if(FinalSettlement) {
+              setBgCard("bg-green-50")
+              setBgCardHover("hover:bg-green-100")
+            }
           }
           getData();
         }
@@ -456,7 +463,7 @@ function Item({address, type, isAccount, userAddress}) {
       if(type == "seller") {
         if(userAddress === seller) {
           return( <Link href={`/listing/${address}`}>
-          <div className="flex flex-col card hover:scale-105 transition-all duration-150 ease-out">
+          <div className={`flex flex-col card hover:scale-105 transition-all ${bgCard} ${bgCardHover} duration-150 ease-out`}>
           <div className="flex justify-center">
           <img className="h-10 w-10" height={100} widht={100} src={ipfs} alt="papareact icon" />
           </div>
@@ -471,7 +478,7 @@ function Item({address, type, isAccount, userAddress}) {
       } else {
         if(userAddress === buyer) {
           return( <Link href={`/listing/${address}`}>
-          <div className="flex flex-col card hover:scale-105 transition-all duration-150 ease-out">
+          <div className={`flex flex-col card hover:scale-105 transition-all ${bgCard} ${bgCardHover} duration-150 ease-out`}>
           <div className="flex justify-center">
           <img className="h-10 w-10" height={100} widht={100} src={ipfs} alt="papareact icon" />
           </div>
@@ -487,7 +494,7 @@ function Item({address, type, isAccount, userAddress}) {
     } else {
       return (
         <Link href={`/listing/${address}`}>
-        <div className="flex flex-col card hover:scale-105 transition-all duration-150 ease-out">
+        <div className={`flex flex-col card hover:scale-105 transition-all ${bgCard} ${bgCardHover} duration-150 ease-out`}>
         <div className="flex justify-center">
         <img className="h-10 w-10" height={100} widht={100} src={ipfs} alt="papareact icon" />
         </div>

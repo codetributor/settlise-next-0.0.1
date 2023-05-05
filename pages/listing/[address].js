@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { useMoralis} from 'react-moralis';
+import Link from 'next/link';
 
 export default function ListingPage() {
 
@@ -512,10 +513,12 @@ export default function ListingPage() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = await provider.getSigner()
       const contract = new ethers.Contract(router.query.address, abi, signer);
-      await contract.tipSeller({value: tipForSellerInput});
+      const tx = await contract.tipSeller({value: tipForSellerInput});
+      await tx.wait(1)
     } catch(e) {
       console.log(e.message);
     }
+    window.location.reload(true);
   }
 
   const addTipForBuyer = async (e) => {
@@ -524,20 +527,24 @@ export default function ListingPage() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = await provider.getSigner()
       const contract = new ethers.Contract(router.query.address, abi, signer);
-      await contract.tipBuyer({value: tipForBuyerInput});
+      const tx = await contract.tipBuyer({value: tipForBuyerInput});
+      await tx.wait(1)
     } catch(e) {
       console.log(e.message);
     }
+    window.location.reload(true);
   }
   const refund = async (e) => {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = await provider.getSigner()
       const contract = new ethers.Contract(router.query.address, abi, signer);
-      await contract.sellerRefund();
+      const tx = await contract.sellerRefund();
+      await tx.wait(1);
     } catch(e) {
       console.log(e.message);
     }
+    router.push(`/users/${account}`)
   }
   if(!price || !item || !ipfs || !sellerCollateral || !buyerCollateral || !tipForSeller || !tipForBuyer || !sellerAddress || !buyerAddress ) {
     return(
@@ -580,8 +587,12 @@ export default function ListingPage() {
               )}
               <p className="text-gray-500">{`Seller Collateral: ${sellerCollateral} wei`}</p>
               <p className="text-gray-500">{`Buyer Collateral: ${buyerCollateral} wei`}</p>
-              <p className="text-gray-500">{`Seller Address: ${sellerAddress.slice(0,5) + "..." + sellerAddress.slice(-4)}`}</p>
-              <p className="text-gray-500">{`Buyer Address: ${buyerAddress.slice(0,5) + "..." + buyerAddress.slice(-4)}`}</p>
+              <Link href={`/users/${sellerAddress}`}>
+                <p className="text-blue-500 cursor-pointer underline">{`Seller Address: ${sellerAddress.slice(0,5) + "..." + sellerAddress.slice(-4)}`}</p>
+              </Link>
+              <Link href={`/users/${buyerAddress}`}>
+              <p className="text-blue-500 cursor-pointer underline">{`Buyer Address: ${buyerAddress.slice(0,5) + "..." + buyerAddress.slice(-4)}`}</p>
+              </Link>
               <p className="text-gray-500">{`Seller Physical Address: ${sellerPhysicalAddress}`}</p>
               <p className="text-gray-500">{`Buyer Physical Address: ${buyerPhysicalAddress}`}</p>
               {buyerCollateral != 0 ? (

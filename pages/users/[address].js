@@ -4,9 +4,11 @@ import { useEffect, useState } from 'react';
 import ItemList from '@/components/ItemList';
 import { useRouter } from 'next/router';
 import { ethers } from 'ethers';
+import { useMoralis } from 'react-moralis';
 
 export default function Home() {
   const router = useRouter()
+  const { account } = useMoralis();
 
   const [ type, setType ] = useState("buyer");
 
@@ -258,14 +260,14 @@ const [ contractAddresses, setContractAddresses] =  useState([""]);
       }
     ],
     provider)
-    if(provider && router.query.address) {
+    if(provider && account) {
       async function fetch() {
-        const addresses = await contract.getUserAddresses(router.query.address);
+        const addresses = await contract.getUserAddresses(account);
         setContractAddresses(addresses);
       }
       fetch();
     }
-  }, [router.query.address, type])
+  }, [account, type])
   return (
     <main className="max-w-6xl mx-auto pb-10">
       <Header />
