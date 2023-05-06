@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { useMoralis} from 'react-moralis';
 import Link from 'next/link';
+import ChatScreen from '@/components/ChatScreen';
 
 export default function ListingPage() {
 
@@ -633,6 +634,11 @@ export default function ListingPage() {
           
         </section>
       </main>
+      <br />
+      <h3
+      className="max-w-6xl mx-auto m-3 p-3 text-2xl"
+      >Chat Box</h3>
+      <ChatScreen contractAddress={router.query.address}/>
     </div>
   )
 }
