@@ -465,7 +465,7 @@ function Item({address, type, isAccount, userAddress}) {
           return( <Link href={`/listing/${address}`}>
           <div className={`flex flex-col card hover:scale-105 transition-all ${bgCard} ${bgCardHover} duration-150 ease-out`}>
           <div className="flex justify-center">
-          <img className="h-10 w-10" height={100} widht={100} src={ipfs} alt="papareact icon" />
+          <img className="h-64 w-64" height={300} widht={300} src={ipfs} alt="papareact icon" />
           </div>
           <h3>{item}</h3>
           <p>{`${price} wei`}</p>
@@ -480,7 +480,7 @@ function Item({address, type, isAccount, userAddress}) {
           return( <Link href={`/listing/${address}`}>
           <div className={`flex flex-col card hover:scale-105 transition-all ${bgCard} ${bgCardHover} duration-150 ease-out`}>
           <div className="flex justify-center">
-          <img className="h-10 w-10" height={100} widht={100} src={ipfs} alt="papareact icon" />
+          <img className="h-64 w-64" height={300} widht={300} src={ipfs} alt="papareact icon" />
           </div>
           <h3>{item}</h3>
           <p>{`${price} wei`}</p>
@@ -496,7 +496,7 @@ function Item({address, type, isAccount, userAddress}) {
         <Link href={`/listing/${address}`}>
         <div className={`flex flex-col card hover:scale-105 transition-all ${bgCard} ${bgCardHover} duration-150 ease-out`}>
         <div className="flex justify-center">
-        <img className="h-10 w-10" height={100} widht={100} src={ipfs} alt="papareact icon" />
+        <img className="h-64 w-64" height={300} widht={300} src={ipfs} alt="papareact icon" />
         </div>
         <h3>{item}</h3>
         <p>{`${price} wei`}</p>
