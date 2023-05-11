@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { db } from '../firebase';
 import { addDoc, collection, doc, setDoc, onSnapshot, serverTimestamp, query, orderBy, timeStamp } from "firebase/firestore";
 import { useMoralis } from 'react-moralis'; 
+import { TrashIcon } from '@heroicons/react/24/outline';
 
 
 function ChatScreen({contractAddress}) {
@@ -10,6 +11,8 @@ function ChatScreen({contractAddress}) {
 
   const [ message, setMessage ] = useState("");
   const [ messages, setMessages ] = useState([]);
+  const [ image, setImage ] = useState(null);
+  const [ imageInput, setImageInput ] = useState(null);
 
   const endOfMessages = useRef();
 
@@ -36,6 +39,7 @@ function ChatScreen({contractAddress}) {
   const sendMessage = async (e) => {
     e.preventDefault()
 
+    if(!message) return
     let collRef = await collection(db, `chats/${contractAddress}/messages`);
     await addDoc(collRef, {
         message: message,
@@ -45,6 +49,25 @@ function ChatScreen({contractAddress}) {
     .catch(e => alert(e))
     setMessage("");
     scrollToBottom();
+    setIsFileImage(false);
+  }
+  const handleImage = (e) => {
+    e.preventDefault();
+
+    const file = e.target.files[0];
+    setImageInput(file);
+    const fileReader = new FileReader();
+    fileReader.onload = function(e) {
+      console.log(e.target.result);
+      setImage(e.target.result);
+    }
+    if(file) {
+      fileReader.readAsDataURL(file);
+    }
+    setTimeout(scrollToBottom, 1000);
+  }
+  const clearUpload = () => {
+    setImage("");
   }
   const scrollToBottom = () => {
     endOfMessages.current.scrollIntoView({
@@ -54,7 +77,7 @@ function ChatScreen({contractAddress}) {
   }
   return (
     <div className="max-w-6xl mx-auto px-0 md:px-5 bg-gray-50">
-      <div className="max-w-6xl overflow-scroll overflow-y-hidden overflow-x-hidden h-90v mx-auto px-0 md:px-5 text-xs md:text-lg bg-gray-50 p-2">
+      <div className="max-w-6xl overflow-scroll overflow-x-hidden h-90v mx-auto px-0 md:px-5 text-xs md:text-lg bg-gray-50 p-2">
         {messages.map(data => (
         data.user == account ? (
             <div key={data.id} className="relative flex-wrap max-w-xs">
@@ -77,9 +100,21 @@ function ChatScreen({contractAddress}) {
             
         )
       ))}
+      <div className="max-w-6xl px-0 md:px-7">
+        {image ? (
+          <div className="relative">
+             <div onClick={clearUpload} className='absolute bg-white p-1 rounded-full -left-2 -top-2'>
+              <TrashIcon height={10} width={10}/>
+              </div>
+             <img src={image} height={200} width={200} />
+          </div>
+         
+        ) : ("")}
+      </div>
       <div ref={endOfMessages}></div>
     </div>
-    <form className="flex flex-row">
+    <form className="flex flex-row justify-center items-center">
+        <input type="file" onChange={handleImage} />
         <input className="w-full m-2 p-2" value={message} onChange={e => setMessage(e.target.value)} type="text" />
         <button
         type="submit"
