@@ -3,6 +3,7 @@ import { db } from '../firebase';
 import { addDoc, collection, doc, setDoc, onSnapshot, serverTimestamp, query, orderBy, timeStamp } from "firebase/firestore";
 import { useMoralis } from 'react-moralis'; 
 import { TrashIcon } from '@heroicons/react/24/outline';
+import axios from 'axios';
 
 
 function ChatScreen({contractAddress}) {
@@ -13,6 +14,7 @@ function ChatScreen({contractAddress}) {
   const [ messages, setMessages ] = useState([]);
   const [ image, setImage ] = useState(null);
   const [ imageInput, setImageInput ] = useState(null);
+  const [ imageSrc, setImageSrc ] = useState("");
 
   const endOfMessages = useRef();
 
@@ -39,17 +41,43 @@ function ChatScreen({contractAddress}) {
   const sendMessage = async (e) => {
     e.preventDefault()
 
-    if(!message) return
-    let collRef = await collection(db, `chats/${contractAddress}/messages`);
-    await addDoc(collRef, {
-        message: message,
-        user: account,
-        timeStamp: serverTimestamp()
-    })
-    .catch(e => alert(e))
-    setMessage("");
-    scrollToBottom();
-    setIsFileImage(false);
+    if(imageInput) {
+      const formData = new FormData();
+      formData.append('file', imageInput)
+      formData.append('upload_preset', 'my-uploads');
+
+      const data = await fetch('https://api.cloudinary.com/v1_1/duvfr5qnr/image/upload', {
+        method: "POST",
+        body: formData
+      })
+      .then(res => res.json());
+      setImageSrc(data.secure_url);
+      if(imageSrc) {
+        let collRef = await collection(db, `chats/${contractAddress}/messages`);
+      await addDoc(collRef, {
+          message: imageSrc,
+          user: account,
+          timeStamp: serverTimestamp()
+      })
+      .catch(e => alert(e))
+      setImageInput(null);
+      setImage(null);
+      scrollToBottom();
+      }
+    } else {
+      if(!message) return
+      let collRef = await collection(db, `chats/${contractAddress}/messages`);
+      await addDoc(collRef, {
+          message: message,
+          user: account,
+          timeStamp: serverTimestamp()
+      })
+      .catch(e => alert(e))
+      setMessage("");
+      scrollToBottom();
+    }
+
+   
   }
   const handleImage = (e) => {
     e.preventDefault();
@@ -58,7 +86,6 @@ function ChatScreen({contractAddress}) {
     setImageInput(file);
     const fileReader = new FileReader();
     fileReader.onload = function(e) {
-      console.log(e.target.result);
       setImage(e.target.result);
     }
     if(file) {
@@ -67,7 +94,8 @@ function ChatScreen({contractAddress}) {
     setTimeout(scrollToBottom, 1000);
   }
   const clearUpload = () => {
-    setImage("");
+    setImage(null);
+    setImageInput(null)
   }
   const scrollToBottom = () => {
     endOfMessages.current.scrollIntoView({
@@ -79,7 +107,20 @@ function ChatScreen({contractAddress}) {
     <div className="max-w-6xl mx-auto px-0 md:px-5 bg-gray-50">
       <div className="max-w-6xl overflow-scroll overflow-x-hidden h-90v mx-auto px-0 md:px-5 text-xs md:text-lg bg-gray-50 p-2">
         {messages.map(data => (
-        data.user == account ? (
+          data.message.startsWith("https://res.cloudinary.com") ? (
+            data.user == account ? (
+              <div className="relative m-7 px-5 py-2">
+              <img className="mr-auto" src={data.message} height={200} width={200}></img>
+              <p className="text-xs absolute -bottom-5 left-9 text-gray-500">from: {data.user.slice(0,4) + "..." + data.user.slice(-4)}</p>
+            </div> 
+            ) : (
+              <div className="relative m-7 px-5 py-2">
+              <img className="ml-auto"src={data.message} height={200} width={200}></img>
+              <p className="text-xs absolute -bottom-5 right-9 text-gray-500">from: {data.user.slice(0,4) + "..." + data.user.slice(-4)}</p>
+            </div> 
+            )
+            
+          ) : (data.user == account ? (
             <div key={data.id} className="relative flex-wrap max-w-xs">
                 <p 
                 style={{
@@ -98,7 +139,8 @@ function ChatScreen({contractAddress}) {
                 <p className="text-xs absolute -bottom-5 right-9 text-gray-500">from: {data.user.slice(0,4) + "..." + data.user.slice(-4)}</p>
             </div>
             
-        )
+        ))
+        
       ))}
       <div className="max-w-6xl px-0 md:px-7">
         {image ? (
