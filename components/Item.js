@@ -468,16 +468,18 @@ function Item({address, type, isAccount, userAddress}) {
               setBgCard("bg-green-50")
               setBgCardHover("hover:bg-green-100")
             }
+            const dollarEth = priceFeed/1e8;
+            const convertDollar  = (price/1e18)*dollarEth;
+            setDollarPrice(convertDollar);
+            console.log(dollarPrice);
           }
           getData();
         }
-      const dollarEth = priceFeed/1e8;
-      const convertDollar  = (price/1e18)*dollarEth;
-      setDollarPrice(convertDollar);
+      
     } 
-  }, [address])
+  }, [address, priceFeed])
   
-  if(!price || !item || !ipfs || !seller || !address) return
+  if(!price || !item || !ipfs || !seller || !address || !priceFeed || !dollarPrice) return
    
     if(isAccount) {
       if(type == "seller") {
@@ -488,7 +490,7 @@ function Item({address, type, isAccount, userAddress}) {
           <img className="h-64 w-64" height={300} widht={300} src={ipfs} alt="papareact icon" />
           </div>
           <h3>{item}</h3>
-          <p>{`${Math.round(dollarPrice * 100)/100} USD`}</p>
+          <p>{`${Math.max( Math.round(dollarPrice * 100) / 100 ).toFixed(2)})} USD`}</p>
           {`${address.slice(0,5)}...${address.slice(-4)}`}
         </div>
           </Link>);
@@ -503,7 +505,7 @@ function Item({address, type, isAccount, userAddress}) {
           <img className="h-64 w-64" height={300} widht={300} src={ipfs} alt="papareact icon" />
           </div>
           <h3>{item}</h3>
-          <p>{`${Math.round(dollarPrice * 100)/100} USD`}</p>
+          <p>{`${Math.max( Math.round(dollarPrice * 100) / 100 ).toFixed(2)} USD`}</p>
           {`${address.slice(0,5)}...${address.slice(-4)}`}
         </div>
           </Link>);
@@ -519,7 +521,7 @@ function Item({address, type, isAccount, userAddress}) {
         <img className="h-64 w-64" height={300} widht={300} src={ipfs} alt="papareact icon" />
         </div>
         <h3>{item}</h3>
-        <p>{`${Math.round(dollarPrice * 100)/100} USD`}</p>
+        <p>{`${Math.max( Math.round(dollarPrice * 100) / 100 ).toFixed(2)} USD`}</p>
         {`${address.slice(0,5)}...${address.slice(-4)}`}
       </div>
         </Link>

@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
 import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import { useMoralis} from 'react-moralis';
@@ -26,6 +26,13 @@ export default function ListingPage() {
   const [buyerAddress, setBuyerAddress] = useState("");
   const [sellerPhysicalAddress, setSellerPhysicalAddress] = useState("");
   const [buyerPhysicalAddress, setBuyerPhysicalAddress] = useState("");
+  const [priceFeed, setPriceFeed] = useState(1)
+  const [dollarPrice, setDollarPrice] = useState(0);
+  const [sellerCollateralDollar, setSellerCollateralDollar] = useState(0);
+  const [buyerCollateralDollar, setBuyerCollateralDollar] = useState(0);
+  const [tipForSellerDollar, setTipForSellerDollar] = useState(0);
+  const [tipForBuyerDollar, setTipForBuyerDollar] = useState(0);
+  
   const abi = [
     {
       "inputs": [
@@ -218,6 +225,19 @@ export default function ListingPage() {
           "internalType": "string",
           "name": "",
           "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getLatestPrice",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -459,7 +479,9 @@ export default function ListingPage() {
               const BuyerAddress = await contract.getBuyerAddress();
               const SellerPhysicalAddress = await contract.getSellerPhysicalAddress();
               const BuyerPhysicalAddress = await contract.getBuyerPhysicalAddress();
-        
+              const ethPrice = await contract.getLatestPrice()
+              
+              setPriceFeed(BigNumber.from(ethPrice["_hex"]).toString());
               setIpfs(Ipfs);
               setItem(Item);
               setPrice(Price);
@@ -472,11 +494,28 @@ export default function ListingPage() {
               setBuyerAddress(BuyerAddress);
               setSellerPhysicalAddress(SellerPhysicalAddress);
               setBuyerPhysicalAddress(BuyerPhysicalAddress);
+              const dollarEth = priceFeed/1e8;
+              const convertDollar  = (price/1e18)*dollarEth;
+              setDollarPrice(convertDollar);
+              const convertSellerCollateralDollar  = (sellerCollateral/1e18)*dollarEth;
+              setSellerCollateralDollar(convertSellerCollateralDollar);
+              if(buyerCollateral != 0) {
+                const convertBuyerCollateralDollar  = (buyerCollateral/1e18)*dollarEth;
+                setBuyerCollateralDollar(convertBuyerCollateralDollar);
+              }
+              if(tipForSeller != 0) {
+                const convertTipForSellerDollar = (tipForSeller/1e18)*dollarEth;
+                setTipForSellerDollar(convertSellerCollateralDollar);
+              }
+              if(tipForBuyer != 0) {
+                const convertTipForBuyerDollar = (tipForBuyer/1e18)*dollarEth;
+                setTipForBuyerDollar(convertTipForBuyerDollar);
+              }
             }
             getData();
         }
       }
-  }, [router.query.address]);
+  }, [router.query.address, priceFeed]);
 
   const purchase = async (e) => {
     e.preventDefault();
@@ -514,7 +553,8 @@ export default function ListingPage() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = await provider.getSigner()
       const contract = new ethers.Contract(router.query.address, abi, signer);
-      const tx = await contract.tipSeller({value: tipForSellerInput});
+      const tipForSellerInWei = Math.floor(tipForSellerInput*1e8*1e18/priceFeed)
+      const tx = await contract.tipSeller({value: tipForSellerInWei.toString()});
       await tx.wait(1)
     } catch(e) {
       console.log(e.message);
@@ -528,7 +568,8 @@ export default function ListingPage() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = await provider.getSigner()
       const contract = new ethers.Contract(router.query.address, abi, signer);
-      const tx = await contract.tipBuyer({value: tipForBuyerInput});
+      const tipForBuyerInWei = Math.floor(tipForBuyerInput*1e8*1e18/priceFeed)
+      const tx = await contract.tipBuyer({value: tipForBuyerInWei.toString()});
       await tx.wait(1)
     } catch(e) {
       console.log(e.message);
@@ -547,7 +588,7 @@ export default function ListingPage() {
     }
     router.push(`/users/${account}`)
   }
-  if(!price || !item || !ipfs || !sellerCollateral || !buyerCollateral || !tipForSeller || !tipForBuyer || !sellerAddress || !buyerAddress ) {
+  if(!price || !item || !ipfs || !sellerCollateral || !buyerCollateral || !tipForSeller || !tipForBuyer || !sellerAddress || !buyerAddress || !dollarPrice || !sellerCollateralDollar ) {
     return(
       <>
       <Header />
@@ -584,10 +625,10 @@ export default function ListingPage() {
             <div className="mb-2">
               <h1 className="font-bold text-lg">{item}</h1>
               {buyerCollateral != 0 ? ("") : (
-                <p className="text-gray-500">{`Price: ${price} wei`}</p>
+                <p className="text-gray-500">{`Price: ${Math.max( Math.round(dollarPrice * 100) / 100 ).toFixed(2)} USD`}</p>
               )}
-              <p className="text-gray-500">{`Seller Collateral: ${sellerCollateral} wei`}</p>
-              <p className="text-gray-500">{`Buyer Collateral: ${buyerCollateral} wei`}</p>
+              <p className="text-gray-500">{`Seller Collateral: ${Math.max( Math.round(sellerCollateralDollar * 100) / 100 ).toFixed(2)} USD`}</p>
+              <p className="text-gray-500">{`Buyer Collateral: ${Math.max( Math.round(buyerCollateralDollar * 100) / 100 ).toFixed(2)} USD`}</p>
               <Link href={`/users/${sellerAddress}`}>
                 <p className="text-blue-500 cursor-pointer underline">{`Seller Address: ${sellerAddress.slice(0,5) + "..." + sellerAddress.slice(-4)}`}</p>
               </Link>
@@ -603,16 +644,16 @@ export default function ListingPage() {
             </div>
             <div className="space-y-2 pr-5">
             <div className="flex justify-between pr-2 items-center space-x-3">
-            <p className="text-gray-500">{`Tip for Seller: ${tipForSeller}`}</p>
+            <p className="text-gray-500">{`Tip for Seller: ${Math.max( Math.round(tipForSellerDollar * 100) / 100 ).toFixed(2)} USD`}</p>
             <form className="flex flex-col space-y-1">
-              <input value={tipForSellerInput} onChange={e => setTipForSellerInput(e.target.value)} className="p-1 border" placeholder='enter tip seller' />
+              <input value={tipForSellerInput} onChange={e => setTipForSellerInput(e.target.value)} className="p-1 border" placeholder='enter tip seller USD' />
               <button onClick={addTipForSeller} className="border-2 border-blue-600 px-5 md:px-10 py-2 text-blue-600 hover:bg-blue-600/50 hover:text-white cursor-pointer">Tip the Seller</button>
             </form>
             </div>
             <div className="flex justify-between pr-2 items-center space-x-3">
-            <p className="text-gray-500">{`Tip for Buyer: ${tipForBuyer}`}</p>
+            <p className="text-gray-500">{`Tip for Buyer: ${Math.max( Math.round(tipForBuyerDollar * 100) / 100 ).toFixed(2)} USD`}</p>
             <form className="flex flex-col space-y-1">
-            <input value={tipForBuyerInput} onChange={e => setTipForBuyerInput(e.target.value)} className="p-1 border" placeholder='enter tip buyer' />
+            <input value={tipForBuyerInput} onChange={e => setTipForBuyerInput(e.target.value)} className="p-1 border" placeholder='enter tip buyer USD' />
             <button onClick={addTipForBuyer} type="submit" className="border-2 border-blue-600 px-5 md:px-10 py-2 text-blue-600 hover:bg-blue-600/50 hover:text-white cursor-pointer">Tip the Buyer</button>
             </form>
             

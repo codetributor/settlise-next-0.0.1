@@ -109,12 +109,12 @@ function ChatScreen({contractAddress}) {
         {messages.map(data => (
           data.message.startsWith("https://res.cloudinary.com") ? (
             data.user == account ? (
-              <div className="relative m-7 px-5 py-2">
+              <div key={data.id} className="relative m-7 px-5 py-2">
               <img className="mr-auto" src={data.message} height={200} width={200}></img>
               <p className="text-xs absolute -bottom-5 left-9 text-gray-500">from: {data.user.slice(0,4) + "..." + data.user.slice(-4)}</p>
             </div> 
             ) : (
-              <div className="relative m-7 px-5 py-2">
+              <div key={data.id} className="relative m-7 px-5 py-2">
               <img className="ml-auto"src={data.message} height={200} width={200}></img>
               <p className="text-xs absolute -bottom-5 right-9 text-gray-500">from: {data.user.slice(0,4) + "..." + data.user.slice(-4)}</p>
             </div> 
@@ -159,7 +159,7 @@ function ChatScreen({contractAddress}) {
       <div ref={endOfMessages}></div>
     </div>
     <form className="flex flex-row justify-center items-center">
-        <label for="file">
+        <label htmlFor="file">
           <PaperClipIcon height="30" width="30" />
         </label>
         <input 
