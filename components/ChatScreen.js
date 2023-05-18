@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { db } from '../firebase';
 import { addDoc, collection, doc, setDoc, onSnapshot, serverTimestamp, query, orderBy, timeStamp } from "firebase/firestore";
 import { useMoralis } from 'react-moralis'; 
-import { TrashIcon } from '@heroicons/react/24/outline';
+import { PaperClipIcon, TrashIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 
 
@@ -105,7 +105,7 @@ function ChatScreen({contractAddress}) {
   }
   return (
     <div className="max-w-6xl mx-auto px-0 md:px-5 bg-gray-50">
-      <div className="max-w-6xl overflow-scroll overflow-x-hidden h-90v mx-auto px-0 md:px-5 text-xs md:text-lg bg-gray-50 p-2">
+      <div className="max-w-6xl overflow-scroll overflow-y-hidden overflow-x-hidden h-90v mx-auto px-0 md:px-5 text-xs md:text-lg bg-gray-50 p-2">
         {messages.map(data => (
           data.message.startsWith("https://res.cloudinary.com") ? (
             data.user == account ? (
@@ -121,22 +121,25 @@ function ChatScreen({contractAddress}) {
             )
             
           ) : (data.user == account ? (
-            <div key={data.id} className="relative flex-wrap max-w-xs">
+            <div key={data.id} className="relative flex-wrap flex max-w-xs">
                 <p 
                 style={{
-                  wordBreak: "break-all"
+                  wordWrap: "wrap"
                 }}
                 className="text-left bg-blue-100 w-fit m-7 px-5 py-2 rounded-full">{data.message}</p>
-                <p className="text-xs absolute -bottom-5 left-9 text-gray-500">from: {data.user.slice(0,4) + "..." + data.user.slice(-4)}</p>
+                <p className="text-xs absolute bottom-0 left-9 text-gray-500">from: {data.user.slice(0,4) + "..." + data.user.slice(-4)}</p>
             </div>
         ) : (
             <div key={data.id} className="relative flex-wrap ml-auto max-w-xs">
+                <div className="flex justify-end">
                 <p 
-                style={{
-                  wordBreak: "break-all"
-                }}
-                className="bg-white w-fit m-7 px-5 py-2 rounded-full">{data.message}</p>
-                <p className="text-xs absolute -bottom-5 right-9 text-gray-500">from: {data.user.slice(0,4) + "..." + data.user.slice(-4)}</p>
+               style={{
+                wordWrap: "wrap"
+              }}
+                className="bg-white text-right w-fit m-7 px-5 py-2 rounded-full">{data.message}</p>
+                <p className="text-xs absolute bottom-0 right-9 text-gray-500">from: {data.user.slice(0,4) + "..." + data.user.slice(-4)}</p>
+                </div>
+                
             </div>
             
         ))
@@ -156,7 +159,14 @@ function ChatScreen({contractAddress}) {
       <div ref={endOfMessages}></div>
     </div>
     <form className="flex flex-row justify-center items-center">
-        <input type="file" onChange={handleImage} />
+        <label for="file">
+          <PaperClipIcon height="30" width="30" />
+        </label>
+        <input 
+        style={{
+          display: "none" 
+        }}
+        type="file" id="file" accept="image/*" onChange={handleImage} />
         <input className="w-full m-2 p-2" value={message} onChange={e => setMessage(e.target.value)} type="text" />
         <button
         type="submit"

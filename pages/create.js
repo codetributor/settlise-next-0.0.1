@@ -8,12 +8,12 @@ import { useMoralis } from 'react-moralis'
 
 const create = () => {
   const [itemName, setItemName] = useState("")
-  const [itemPrice, setItemPrice] = useState()
+  const [itemPrice, setItemPrice] = useState(0)
   const [sellerPhysicalAddress, setSellerPhysicalAddress] = useState("")
   const [ipfsImage, setIpfsImage] = useState("")  
   const { account } = useMoralis();
   const [warningMsg, setWarningMsg] = useState("")
-  const [contract, setContract] = useState()
+  const [contract, setContract] = useState("")
   const [priceInWei, setPriceInWei] = useState(0)
   const [priceFeed, setPriceFeed] = useState(1)
 
@@ -27,7 +27,7 @@ const create = () => {
     if (sellerPhysicalAddress.length == 0) return msgAlert("Please fill seller physical address...")
     if (ipfsImage.length == 0) return msgAlert("Please fill ipfs image...")
 
-    const itemPriceInWei = itemPrice*1e8*1e18/priceFeed
+    const itemPriceInWei = Math.floor(itemPrice*1e8*1e18/priceFeed)
     
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const contract = new ethers.Contract(address.address, abi.abi, provider.getSigner())
@@ -35,10 +35,11 @@ const create = () => {
     .then((res) => {
       setItemName("")
       setItemPrice("")
-      sellerPhysicalAddress("")
+      setsellerPhysicalAddress("")
       ipfsImage("")      
     })
-    .catch(() => {
+    .catch((e) => {
+      console.log(e.message);
       setItemName("")
       setItemPrice("")
       setSellerPhysicalAddress("")
@@ -71,7 +72,7 @@ const create = () => {
   const convertToWei = () => {
     latestPrice()
     const scaleAmount = itemPrice * 1e8
-    const amountInWei = 1e18*scaleAmount/priceFeed;
+    const amountInWei = Math.floor(1e18*scaleAmount/priceFeed);
     setPriceInWei(amountInWei)
     return amountInWei;
   }
@@ -120,7 +121,7 @@ const create = () => {
                 <input onChange={e => {setSellerPhysicalAddress(e.target.value)}} type="text" value={sellerPhysicalAddress} placeholder='2335 S State St Provo, UT 84606 ' className="bg-gray-100 font-light p-3 outline-none"/>
                 
                 {/*  IPFS IMAGE  */}
-                <label className="font-light" htmlFor="">IPFS image</label>
+                <label className="font-light" htmlFor="">Hosted Image Url</label>
                 <input onChange={e => {setIpfsImage(e.target.value)}} type="text" value={ipfsImage} placeholder='https://...' className="bg-gray-100 font-light p-3 outline-none"/>
 
               </div>

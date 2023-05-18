@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useMoralis } from 'react-moralis';
@@ -12,7 +12,9 @@ function Item({address, type, isAccount, userAddress}) {
   const [ buyer, setBuyer ] = useState("");
   const [ bgCard, setBgCard] = useState("bg-gray-50")
   const [ bgCardHover, setBgCardHover ] = useState("hover:bg-gray-100")
-  
+  const [priceFeed, setPriceFeed] = useState(1)
+  const [dollarPrice, setDollarPrice] = useState(0);
+
   const abi = [
     {
       "inputs": [
@@ -205,6 +207,19 @@ function Item({address, type, isAccount, userAddress}) {
           "internalType": "string",
           "name": "",
           "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getLatestPrice",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -442,6 +457,8 @@ function Item({address, type, isAccount, userAddress}) {
             const Seller = await contract.getSellerAddress();
             const Buyer = await contract.getBuyerAddress();
             const FinalSettlement = await contract.getFinalSettlement();
+            const ethPrice = await contract.getLatestPrice()
+            setPriceFeed(BigNumber.from(ethPrice["_hex"]).toString())
             setIpfs(Ipfs);
             setItem(Item);
             setPrice(Price);
@@ -454,6 +471,9 @@ function Item({address, type, isAccount, userAddress}) {
           }
           getData();
         }
+      const dollarEth = priceFeed/1e8;
+      const convertDollar  = (price/1e18)*dollarEth;
+      setDollarPrice(convertDollar);
     } 
   }, [address])
   
@@ -468,7 +488,7 @@ function Item({address, type, isAccount, userAddress}) {
           <img className="h-64 w-64" height={300} widht={300} src={ipfs} alt="papareact icon" />
           </div>
           <h3>{item}</h3>
-          <p>{`${price} wei`}</p>
+          <p>{`${Math.round(dollarPrice * 100)/100} USD`}</p>
           {`${address.slice(0,5)}...${address.slice(-4)}`}
         </div>
           </Link>);
@@ -483,7 +503,7 @@ function Item({address, type, isAccount, userAddress}) {
           <img className="h-64 w-64" height={300} widht={300} src={ipfs} alt="papareact icon" />
           </div>
           <h3>{item}</h3>
-          <p>{`${price} wei`}</p>
+          <p>{`${Math.round(dollarPrice * 100)/100} USD`}</p>
           {`${address.slice(0,5)}...${address.slice(-4)}`}
         </div>
           </Link>);
@@ -499,7 +519,7 @@ function Item({address, type, isAccount, userAddress}) {
         <img className="h-64 w-64" height={300} widht={300} src={ipfs} alt="papareact icon" />
         </div>
         <h3>{item}</h3>
-        <p>{`${price} wei`}</p>
+        <p>{`${Math.round(dollarPrice * 100)/100} USD`}</p>
         {`${address.slice(0,5)}...${address.slice(-4)}`}
       </div>
         </Link>

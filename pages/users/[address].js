@@ -18,7 +18,7 @@ const [ contractAddresses, setContractAddresses] =  useState([""]);
   useEffect(() => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const contract = new ethers.Contract(
-    "0x84eb9bE781cFD4A2BcE9EBc0B6D53f1983070828", 
+    "0x4A21A8cd4957894912520a9E3230C094652035d1", 
     [
       {
         "inputs": [],
