@@ -22,10 +22,10 @@ const create = () => {
 
     if (!account) return msgAlert("Please connect to MATIC...")
     
-    if (itemName.length == 0) return msgAlert("Please fill Item Name...")
-    if (itemPrice.length == 0) return msgAlert("Please fill Item Price...")
-    if (sellerPhysicalAddress.length == 0) return msgAlert("Please fill seller physical address...")
-    if (ipfsImage.length == 0) return msgAlert("Please fill ipfs image...")
+    if (itemName.length == 0) return msgAlert("Please enter Item Name...")
+    if (itemPrice.length == 0) return msgAlert("Please enter Item Price...")
+    if (sellerPhysicalAddress.length == 0) return msgAlert("Please enter seller physical address...")
+    if (ipfsImage.length == 0) return msgAlert("Please enter ipfs image...")
 
     const itemPriceInWei = Math.floor(itemPrice*1e8*1e18/priceFeed)
     
@@ -91,9 +91,9 @@ const create = () => {
         <h2 className="text-xl font-semibold pt-5">Create your listing</h2>
 
         <form onSubmit={ (e) => handleCreateContract(e)}>
-            <div className="flex flex-col p-10">
+            <div className="flex flex-col p-0 md:p-10">
               <div className="grid grid-col-2 gap-5">
-
+              
                 {/*  ITEM NAME  */}
                 <label className="font-light" htmlFor="">Item Name</label>
                 <input onChange={e => {setItemName(e.target.value)}} type="text" value={itemName} placeholder='Laptop last...'  className="bg-gray-100 font-light p-3 outline-none" />
@@ -102,14 +102,15 @@ const create = () => {
                 {priceFeed !== 1 && 
                 <div>{`1 ETH = ${priceFeed/1e8} usd `}</div>
                 }
-                <div className='flex space-x-5 justify-between'>
-                  <div className='flex flex-col w-[46%]'>
+                <div className='flex flex-col md:flex-row md:space-x-5 justify-between'>
+                  <div className='flex flex-col w-[100%] md:w-[46%]'>
                     <label className="font-light" htmlFor="">Item price (usd)</label>
                     <input type="text" onChange={e => {(setItemPrice(e.target.value), convertToWei())}}  value={itemPrice} name='usd'
                     placeholder='1000' className="bg-gray-100 font-light p-3 outline-none"/>
                     
                   </div>
-                  <div className='flex flex-col w-[46%]'>
+
+                  <div className='flex flex-col w-[100%] md:w-[46%] pt-5 md:py-0'>
                     <label className="font-light" htmlFor="">Item price (wei)</label>
                     <input type="text" onChange={e => setPriceInWei(e.target.value)} value={itemPrice*1e8*1e18/priceFeed || ""} name='usd'
                     placeholder='1000' className="bg-gray-100 font-light p-3 outline-none"/>
@@ -120,7 +121,7 @@ const create = () => {
                 <label className="font-light" htmlFor="">Seller Physical Address</label>
                 <input onChange={e => {setSellerPhysicalAddress(e.target.value)}} type="text" value={sellerPhysicalAddress} placeholder='2335 S State St Provo, UT 84606 ' className="bg-gray-100 font-light p-3 outline-none"/>
                 
-                {/*  IPFS IMAGE  */}
+                {/*  URL IMAGE  */}
                 <label className="font-light" htmlFor="">Hosted Image Url</label>
                 <input onChange={e => {setIpfsImage(e.target.value)}} type="text" value={ipfsImage} placeholder='https://...' className="bg-gray-100 font-light p-3 outline-none"/>
 
