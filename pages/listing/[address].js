@@ -32,6 +32,7 @@ export default function ListingPage() {
   const [buyerCollateralDollar, setBuyerCollateralDollar] = useState(0);
   const [tipForSellerDollar, setTipForSellerDollar] = useState(0);
   const [tipForBuyerDollar, setTipForBuyerDollar] = useState(0);
+  const [warningMsg,setWarningMsg] = useState("")
   
   const abi = [
     {
@@ -519,8 +520,9 @@ export default function ListingPage() {
 
   const purchase = async (e) => {
     e.preventDefault();
+    if (!account) return msgAlert("Please connect to MATIC...")
     if (!physicalAddress) {
-      alert("Please enter physical address")
+      msgAlert("Please enter physical address")
       return
     } 
     try {
@@ -533,6 +535,12 @@ export default function ListingPage() {
       console.log(e.message)
     }
     router.push(`/users/${account}`);
+  }
+  const msgAlert = (_msg) => {
+    setWarningMsg(_msg)
+    setTimeout(() => {
+      setWarningMsg("")
+    }, "3000")
   }
   const settle = async (e) => {
     e.preventDefault();
@@ -668,6 +676,10 @@ export default function ListingPage() {
           ) : (
             <form className="flex flex-col pr-7">
             <input className="text-gray-500 p-1 my-2 border" value={physicalAddress} onChange={e => setPhysicalAddress(e.target.value)} placeholder="enter physical address" required />
+            {/*  WARNING MESSAGE  */}
+            <div className='flex mx-auto py-5 text-red-700'>
+              {warningMsg}
+            </div>
             <button onClick={purchase} type="submit" className="border-2 mt-2  border-blue-600 px-5 md:px-10 py-2 text-blue-600 hover:bg-blue-600/50 hover:text-white cursor-pointer">Purchase</button>
             </form>
            
