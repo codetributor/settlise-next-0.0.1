@@ -490,7 +490,7 @@ function Item({address, type, isAccount, userAddress}) {
           <img className="h-64 w-64" height={300} widht={300} src={ipfs} alt="papareact icon" />
           </div>
           <h3>{item}</h3>
-          <p>{`${Math.max( Math.round(dollarPrice * 100) / 100 ).toFixed(2)})} USD`}</p>
+          <p>{`${Math.max( Math.round(dollarPrice * 100) / 100 ).toFixed(2)} USD`}</p>
           {`${address.slice(0,5)}...${address.slice(-4)}`}
         </div>
           </Link>);

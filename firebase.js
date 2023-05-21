@@ -3,19 +3,20 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from 'firebase/firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
-
+let app, firebaseConfig, db;
 // Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyC49FW4D-04qZGzgMaRySTWcxI1koxOGdY",
-  authDomain: "settlise.firebaseapp.com",
-  projectId: "settlise",
-  storageBucket: "settlise.appspot.com",
-  messagingSenderId: "992250335795",
-  appId: "1:992250335795:web:d31dc73b21d25728840946"
-};
+fetch('http://localhost:3000/api/firebase')
+.then(result => result.json())
+.then(data => {
 
-// Initialize Firebase
-let app;
+  firebaseConfig = {
+    apiKey: data.apiKey,
+    authDomain: data.authDomain,
+    projectId: data.projectId,
+    storageBucket: data.storageBucket,
+    messagingSenderId: data.messagingSenderId,
+    appId: data.appId
+  };
 
 if(app) {
     app
@@ -23,6 +24,12 @@ if(app) {
     app = initializeApp(firebaseConfig);
 }
 
-const db = getFirestore(app);
+db = getFirestore(app);
+
+})
+
+
+// Initialize Firebase
+
 
 export { app, db }
