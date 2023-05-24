@@ -17,6 +17,10 @@ const Create = () => {
   const [priceInWei, setPriceInWei] = useState(0)
   const [priceFeed, setPriceFeed] = useState(1)
 
+  useEffect(() => {
+    updateEthers()
+  },[account])
+
   const handleCreateContract = async (e) => {
     e.preventDefault()
 
@@ -77,9 +81,7 @@ const Create = () => {
     return amountInWei;
   }
 
-  useEffect(() => {
-    updateEthers()
-  },[account])
+  
 
   return(
     <div>
