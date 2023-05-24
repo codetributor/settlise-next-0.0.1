@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { useMoralis } from 'react-moralis'
 
 
-const create = () => {
+const Create = () => {
   const [itemName, setItemName] = useState("")
   const [itemPrice, setItemPrice] = useState(0)
   const [sellerPhysicalAddress, setSellerPhysicalAddress] = useState("")
@@ -146,4 +146,4 @@ const create = () => {
   )
 }
 
-export default create
+export default Create
