@@ -5,7 +5,7 @@ import { getFirestore } from 'firebase/firestore';
 // https://firebase.google.com/docs/web/setup#available-libraries
 let app, firebaseConfig, db;
 // Your web app's Firebase configuration
-fetch('http://127.0.0.1:3000/api/firebase')
+fetch('https://settlise-next-0-0-1.vercel.app/api/firebase')
 .then(result => result.json())
 .then(data => {
 
