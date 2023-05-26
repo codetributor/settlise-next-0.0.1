@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { ConnectButton } from '@web3uikit/web3';
 import { useMoralis } from 'react-moralis';
+import { UserContext } from '@/context/AccountContext';
 
 import {
     BellIcon,
@@ -13,13 +14,16 @@ import Image from 'next/image';
 
 function Header() {
 
-    const { account } = useMoralis();
+    const { currentAccount, connectWallet } =  UserContext();
 
     return (
         <div className="max-w-6xl mx-auto p-2">
             <nav className="flex justify-between">
                 <div className="flex items-center space-x-2 text-sm">
-                    <ConnectButton moralisAuth={false} />
+                    <button
+                    onClick={connectWallet}
+                    className="py-2 px-4 bg-blue-400 text-white rounded-md"
+                    >{currentAccount ? (currentAccount.slice(0,4) + "..." + currentAccount.slice(-4)) : ("Connect Wallet")}</button>
                     <p className="headerLink">Daily Deals</p>
                     <p className="headerLink">Help & Contact</p>
                 </div>
@@ -32,7 +36,7 @@ function Header() {
                         <ChevronDownIcon className="h-4"/>    
                     </Link>
                     <BellIcon className="h-6 w-6" />
-                    <Link href={`/users/${account}`}>
+                    <Link href={`/users/${currentAccount}`}>
                     <UserCircleIcon className="h-6 w-6" />
                     </Link>
                 </div>

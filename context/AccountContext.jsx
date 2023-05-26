@@ -1,7 +1,8 @@
 const { createContext, useState, useEffect, useContext } = require("react");
 import { ethers } from 'ethers'
 import abi from '../constants/abi.json'
-import address from '../constants/address.json'
+import address from '../constants/address.json';
+import txAbi from '../constants/txAbi.json';
 
 
 const AccountContext = createContext()
@@ -13,6 +14,10 @@ export const AccountContextProvider = ({children}) => {
 
   const [currentAccount, setCurrentAccount] = useState()
   const [currentContract, setCurrentContract] = useState()
+
+  useEffect(() => {
+    isWalletConnected()
+  },[])
 
   const connectWallet = async() => {
     if(!window.ethereum) return 
@@ -38,13 +43,15 @@ export const AccountContextProvider = ({children}) => {
     return contract
   }
 
-  useEffect(() => {
-    isWalletConnected()
-  },[])
+  const getTxContract = (_address) => {
+    if(!window.ethereum) return
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const txContract = new ethers.Contract(_address, txAbi.txAbi, signer);
+    return txContract
+  }
 
-
-
-  const data = {currentAccount, connectWallet, isWalletConnected, getCurrentContract }
+  const data = {currentAccount, connectWallet, isWalletConnected, getCurrentContract, getTxContract }
 
   return(
     <AccountContext.Provider value = {data}>

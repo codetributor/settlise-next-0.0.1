@@ -2,13 +2,13 @@ import { useRouter } from 'next/router';
 import { ethers, BigNumber } from "ethers";
 import { useEffect, useState } from "react";
 import Header from "../../components/Header";
-import { useMoralis} from 'react-moralis';
 import Link from 'next/link';
 import ChatScreen from '@/components/ChatScreen';
+import { UserContext } from '@/context/AccountContext';
 
 export default function ListingPage() {
 
-  const { account } = useMoralis();
+  const { currentAccount, getTxContract } = UserContext();
 
   const router = useRouter();
   const [ ipfs, setIpfs] = useState("");
@@ -34,453 +34,25 @@ export default function ListingPage() {
   const [tipForBuyerDollar, setTipForBuyerDollar] = useState(0);
   const [warningMsg,setWarningMsg] = useState("")
   
-  const abi = [
-    {
-      "inputs": [
-        {
-          "internalType": "string",
-          "name": "_ipfsImage",
-          "type": "string"
-        },
-        {
-          "internalType": "string",
-          "name": "_item",
-          "type": "string"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_price",
-          "type": "uint256"
-        },
-        {
-          "internalType": "string",
-          "name": "_sellerPhysicalAddress",
-          "type": "string"
-        },
-        {
-          "internalType": "address",
-          "name": "_sellerAddress",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_id",
-          "type": "uint256"
-        },
-        {
-          "internalType": "address",
-          "name": "_TxFactoryContractAddress",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "payable",
-      "type": "constructor"
-    },
-    {
-      "inputs": [],
-      "name": "Transfer__Failed",
-      "type": "error"
-    },
-    {
-      "inputs": [],
-      "name": "TxFactoryContractAddress",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "buyerSettle",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getBuyerAddress",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getBuyerCollateral",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getBuyerPhysicalAddress",
-      "outputs": [
-        {
-          "internalType": "string",
-          "name": "",
-          "type": "string"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getBuyerSettled",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getCost",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getDispute",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getFinalSettlement",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getId",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getIpfsImage",
-      "outputs": [
-        {
-          "internalType": "string",
-          "name": "",
-          "type": "string"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getItem",
-      "outputs": [
-        {
-          "internalType": "string",
-          "name": "",
-          "type": "string"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getLatestPrice",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getPending",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getPrice",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getSellerAddress",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getSellerCollateral",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getSellerPhysicalAddress",
-      "outputs": [
-        {
-          "internalType": "string",
-          "name": "",
-          "type": "string"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getSellerSettled",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getTipForBuyer",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getTipForSeller",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getTotalContractBalance",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getTransactionAddress",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "ipfsImage",
-      "outputs": [
-        {
-          "internalType": "string",
-          "name": "",
-          "type": "string"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_msgSender",
-          "type": "address"
-        }
-      ],
-      "name": "payOutBuyer",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_msgSender",
-          "type": "address"
-        }
-      ],
-      "name": "payOutSeller",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "string",
-          "name": "_buyerPhysicalAddress",
-          "type": "string"
-        }
-      ],
-      "name": "purchase",
-      "outputs": [],
-      "stateMutability": "payable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "sellerRefund",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "sellerSettle",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "setDispute",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "tipBuyer",
-      "outputs": [],
-      "stateMutability": "payable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "tipSeller",
-      "outputs": [],
-      "stateMutability": "payable",
-      "type": "function"
-    }
-  ];
   useEffect(() => {
       if(router.query.address) {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const contract = new ethers.Contract(router.query.address, abi, provider)
-        if(provider) {
+        const txContract = getTxContract(router.query.address);
+        
+        if(txContract) {
           async function getData() {
-              const Ipfs = await contract.getIpfsImage();
-              const Item = await contract.getItem();
-              const Price = await contract.getPrice();
-              const SellerCollateral = await contract.getSellerCollateral();
-              const BuyerCollateral = await contract.getBuyerCollateral();
-              const TipForSeller = await contract.getTipForSeller();
-              const TipForBuyer = await contract.getTipForBuyer();
-              const FinalSettlement = await contract.getFinalSettlement();
-              const SellerAddress = await contract.getSellerAddress();
-              const BuyerAddress = await contract.getBuyerAddress();
-              const SellerPhysicalAddress = await contract.getSellerPhysicalAddress();
-              const BuyerPhysicalAddress = await contract.getBuyerPhysicalAddress();
-              const ethPrice = await contract.getLatestPrice()
+              const Ipfs = await txContract.getIpfsImage();
+              const Item = await txContract.getItem();
+              const Price = await txContract.getPrice();
+              const SellerCollateral = await txContract.getSellerCollateral();
+              const BuyerCollateral = await txContract.getBuyerCollateral();
+              const TipForSeller = await txContract.getTipForSeller();
+              const TipForBuyer = await txContract.getTipForBuyer();
+              const FinalSettlement = await txContract.getFinalSettlement();
+              const SellerAddress = await txContract.getSellerAddress();
+              const BuyerAddress = await txContract.getBuyerAddress();
+              const SellerPhysicalAddress = await txContract.getSellerPhysicalAddress();
+              const BuyerPhysicalAddress = await txContract.getBuyerPhysicalAddress();
+              const ethPrice = await txContract.getLatestPrice()
               
               setPriceFeed(BigNumber.from(ethPrice["_hex"]).toString());
               setIpfs(Ipfs);
@@ -520,21 +92,19 @@ export default function ListingPage() {
 
   const purchase = async (e) => {
     e.preventDefault();
-    if (!account) return msgAlert("Please connect to MATIC...")
+    if (!currentAccount) return msgAlert("Please connect to MATIC...")
     if (!physicalAddress) {
       msgAlert("Please enter physical address")
       return
     } 
     try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = await provider.getSigner()
-      const contract = new ethers.Contract(router.query.address, abi, signer)
-      const tx = await contract.purchase(physicalAddress, { value: `${price * 2}`});
+      const txContract = getTxContract(router.query.address);
+      const tx = await txContract.purchase(physicalAddress, { value: `${price * 2}`});
       await tx.wait(1);
     } catch(e) {
       console.log(e.message)
     }
-    router.push(`/users/${account}`);
+    router.push(`/users/${currentAccount}`);
   }
   const msgAlert = (_msg) => {
     setWarningMsg(_msg)
@@ -545,24 +115,20 @@ export default function ListingPage() {
   const settle = async (e) => {
     e.preventDefault();
     try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = await provider.getSigner()
-      const contract = new ethers.Contract(router.query.address, abi, signer);
-      const tx = await contract.buyerSettle();
+      const txContract = getTxContract(router.query.address);
+      const tx = await txContract.buyerSettle();
       await tx.wait(1)
     } catch(e) {
       console.log(e.message);
     }
-    router.push(`/users/${account}`);
+    router.push(`/users/${currentAccount}`);
   }
   const addTipForSeller =  async (e) => {
     e.preventDefault();
     try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = await provider.getSigner()
-      const contract = new ethers.Contract(router.query.address, abi, signer);
+      const txContract = getTxContract(router.query.address);
       const tipForSellerInWei = Math.floor(tipForSellerInput*1e8*1e18/priceFeed)
-      const tx = await contract.tipSeller({value: tipForSellerInWei.toString()});
+      const tx = await txContract.tipSeller({value: tipForSellerInWei.toString()});
       await tx.wait(1)
     } catch(e) {
       console.log(e.message);
@@ -573,11 +139,9 @@ export default function ListingPage() {
   const addTipForBuyer = async (e) => {
     e.preventDefault();
     try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = await provider.getSigner()
-      const contract = new ethers.Contract(router.query.address, abi, signer);
+      const txContract = getTxContract(router.query.address);
       const tipForBuyerInWei = Math.floor(tipForBuyerInput*1e8*1e18/priceFeed)
-      const tx = await contract.tipBuyer({value: tipForBuyerInWei.toString()});
+      const tx = await txContract.tipBuyer({value: tipForBuyerInWei.toString()});
       await tx.wait(1)
     } catch(e) {
       console.log(e.message);
@@ -586,15 +150,13 @@ export default function ListingPage() {
   }
   const refund = async (e) => {
     try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = await provider.getSigner()
-      const contract = new ethers.Contract(router.query.address, abi, signer);
-      const tx = await contract.sellerRefund();
+      const txContract = getTxContract(router.query.address);
+      const tx = await txContract.sellerRefund();
       await tx.wait(1);
     } catch(e) {
       console.log(e.message);
     }
-    router.push(`/users/${account}`)
+    router.push(`/users/${currentAccount}`)
   }
   if(!price || !item || !ipfs || !sellerCollateral || !buyerCollateral || !tipForSeller || !tipForBuyer || !sellerAddress || !buyerAddress || !dollarPrice || !sellerCollateralDollar ) {
     return(
