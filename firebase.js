@@ -5,7 +5,7 @@ import { getFirestore } from 'firebase/firestore';
 // https://firebase.google.com/docs/web/setup#available-libraries
 let app, firebaseConfig, db;
 // Your web app's Firebase configuration
-fetch('http://localhost:3000/api/firebase')
+fetch(process.env.NEXT_PUBLIC_CREDENTIALS)
 .then(result => result.json())
 .then(data => {
 

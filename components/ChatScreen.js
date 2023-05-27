@@ -4,11 +4,11 @@ import { addDoc, collection, doc, setDoc, onSnapshot, serverTimestamp, query, or
 import { useMoralis } from 'react-moralis'; 
 import { PaperClipIcon, TrashIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
-
+import { UserContext } from '@/context/AccountContext';
 
 function ChatScreen({contractAddress}) {
 
-  const { account } = useMoralis();
+  const { currentAccount } = UserContext();
 
   const [ message, setMessage ] = useState("");
   const [ messages, setMessages ] = useState([]);
@@ -56,7 +56,7 @@ function ChatScreen({contractAddress}) {
         let collRef = await collection(db, `chats/${contractAddress}/messages`);
       await addDoc(collRef, {
           message: imageSrc,
-          user: account,
+          user: currentAccount,
           timeStamp: serverTimestamp()
       })
       .catch(e => alert(e))
@@ -69,7 +69,7 @@ function ChatScreen({contractAddress}) {
       let collRef = await collection(db, `chats/${contractAddress}/messages`);
       await addDoc(collRef, {
           message: message,
-          user: account,
+          user: currentAccount,
           timeStamp: serverTimestamp()
       })
       .catch(e => alert(e))
@@ -108,7 +108,7 @@ function ChatScreen({contractAddress}) {
       <div className="max-w-6xl overflow-scroll overflow-y-hidden overflow-x-hidden h-90v mx-auto px-0 md:px-5 text-xs md:text-lg bg-gray-50 p-2">
         {messages.map(data => (
           data.message.startsWith("https://res.cloudinary.com") ? (
-            data.user == account ? (
+            data.user == currentAccount ? (
               <div key={data.id} className="relative m-7 px-5 py-2">
               <img className="mr-auto" src={data.message} height={200} width={200}></img>
               <p className="text-xs absolute -bottom-5 left-9 text-gray-500">from: {data.user.slice(0,4) + "..." + data.user.slice(-4)}</p>
@@ -120,7 +120,7 @@ function ChatScreen({contractAddress}) {
             </div> 
             )
             
-          ) : (data.user == account ? (
+          ) : (data.user == currentAccount ? (
             <div key={data.id} className="relative flex-wrap flex max-w-xs">
                 <p 
                 style={{
