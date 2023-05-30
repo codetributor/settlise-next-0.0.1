@@ -48,7 +48,9 @@ if(app) {
 } else {
     app = initializeApp(firebaseConfig); 
 }
-    db = getFirestore(app);
+    db = getFirestore(app,  {
+      experimentalForceLongPolling: true,
+    });
     
 
     const collRef = collection(db, `chats/${contractAddress}/messages`);
