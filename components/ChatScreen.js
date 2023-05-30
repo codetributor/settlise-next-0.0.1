@@ -7,22 +7,7 @@ import { PaperClipIcon, TrashIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import { UserContext } from '@/context/AccountContext';
 
-function ChatScreen({contractAddress}) {
-
-  const { currentAccount } = UserContext();
-
-  const [ message, setMessage ] = useState("");
-  const [ messages, setMessages ] = useState([]);
-  const [ image, setImage ] = useState(null);
-  const [ imageInput, setImageInput ] = useState(null);
-  const [ imageSrc, setImageSrc ] = useState("");
-  const [ app, setApp ] = useState(null);
-  const [ db, setDb] = useState(null)
-
-  const endOfMessages = useRef();
-
-  useEffect(() => {
-    let firebaseConfig
+let firebaseConfig, app, db;
   // Your web app's Firebase configuration
   fetch(process.env.NEXT_PUBLIC_CREDENTIALS)
   .then(result => result.json())
@@ -40,11 +25,27 @@ function ChatScreen({contractAddress}) {
 if(app) {
     app
 } else {
-    initializedApp = initializeApp(firebaseConfig);
-    setApp(initializeApp);
+    app = initializeApp(firebaseConfig);
+    
 }
-    initializedDb = getFirestore(app);
-    setDb(initializedDb);
+    db = getFirestore(app);
+  
+});
+   
+function ChatScreen({contractAddress}) {
+
+  const { currentAccount } = UserContext();
+
+  const [ message, setMessage ] = useState("");
+  const [ messages, setMessages ] = useState([]);
+  const [ image, setImage ] = useState(null);
+  const [ imageInput, setImageInput ] = useState(null);
+  const [ imageSrc, setImageSrc ] = useState("");
+
+  const endOfMessages = useRef();
+
+  useEffect(() => {
+    
 
 const collRef = collection(db, `chats/${contractAddress}/messages`);
     const messList = query(collRef, orderBy("timeStamp", "asc"));
@@ -62,10 +63,7 @@ const collRef = collection(db, `chats/${contractAddress}/messages`);
             setMessages(data);
         })
     }
-    unsubscribe();
-})
-    
-    
+    unsubscribe();    
   }, [])
 
   const sendMessage = async (e) => {
