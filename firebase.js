@@ -23,15 +23,10 @@ if(app) {
 } else {
     app = initializeApp(firebaseConfig);
 }
-if(db) {
-  db 
-} else {
-  db = getFirestore(app);
-}
 })
 
 
 // Initialize Firebase
 
 
-export { app, db }
+export { app }

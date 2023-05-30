@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { db } from '../firebase';
+import { app } from '../firebase';
+import { getFirestore } from 'firebase/firestore';
 import { addDoc, collection, doc, setDoc, onSnapshot, serverTimestamp, query, orderBy, timeStamp } from "firebase/firestore";
 import { useMoralis } from 'react-moralis'; 
 import { PaperClipIcon, TrashIcon } from '@heroicons/react/24/outline';
@@ -19,6 +20,7 @@ function ChatScreen({contractAddress}) {
   const endOfMessages = useRef();
 
   useEffect(() => {
+    const db = getFirestore(app);
     const collRef = collection(db, `chats/${contractAddress}/messages`);
     const messList = query(collRef, orderBy("timeStamp", "asc"));
     const unsubscribe =  async () => {
