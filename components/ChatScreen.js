@@ -24,7 +24,7 @@ function ChatScreen({contractAddress}) {
   useEffect(() => {
     let firebaseConfig
   // Your web app's Firebase configuration
-  fetch(process.env.NEXT_PUBLIC_CREDENTIALS)
+  fetch('/api/firebase')
   .then(result => {
     try {
       return result.json()
