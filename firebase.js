@@ -23,9 +23,11 @@ if(app) {
 } else {
     app = initializeApp(firebaseConfig);
 }
-
-db = getFirestore(app);
-
+if(db) {
+  db 
+} else {
+  db = getFirestore(app);
+}
 })
 
 
