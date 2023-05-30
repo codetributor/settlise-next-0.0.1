@@ -20,9 +20,9 @@ const ItemList = ({ contractAddresses, isAccount, type, userAddress }) => {
         
       {copyListArray? (
         copyListArray.map((address) => (
-          <div onClick={() => {!currentAccount? cautionMsg("Please connect to Matic"): ""}}> {/* Mod3 */}
+          <div onClick={() => {!currentAccount? cautionMsg("Please connect to Matic"): ""}} key={`${address}-${isAccount}-${type}`}> {/* Mod3 */}
 
-            <Item key={`${address}-${isAccount}-${type}`} address={address} userAddress={userAddress} isAccount={isAccount} type={type} />
+            <Item  address={address} userAddress={userAddress} isAccount={isAccount} type={type} />
             <div className='text-red-500 mt-2'>{redFlagMsg}</div> {/* Mod4 */}
           
           </div>
