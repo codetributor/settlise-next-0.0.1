@@ -25,7 +25,13 @@ function ChatScreen({contractAddress}) {
     let firebaseConfig
   // Your web app's Firebase configuration
   fetch(process.env.NEXT_PUBLIC_CREDENTIALS)
-  .then(result => result.json())
+  .then(result => {
+    try {
+      return result.json()
+    } catch (error) {
+      console.log(error)
+    }
+    })
   .then(data => {
 
   firebaseConfig = {
@@ -45,7 +51,7 @@ if(app) {
     db = getFirestore(app);
     
 
-const collRef = collection(db, `chats/${contractAddress}/messages`);
+    const collRef = collection(db, `chats/${contractAddress}/messages`);
     const messList = query(collRef, orderBy("timeStamp", "asc"));
     const unsubscribe =  async () => {
         onSnapshot(messList, (snapShot) => {
@@ -62,7 +68,6 @@ const collRef = collection(db, `chats/${contractAddress}/messages`);
         })
     }
     unsubscribe();
-    console.log(db);
 })
 .catch(error => console.log(error));
     
