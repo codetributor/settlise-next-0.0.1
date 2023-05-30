@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { app } from '../firebase';
+import { initializeApp } from "firebase/app";
 import { getFirestore } from 'firebase/firestore';
 import { addDoc, collection, doc, setDoc, onSnapshot, serverTimestamp, query, orderBy, timeStamp } from "firebase/firestore";
 import { useMoralis } from 'react-moralis'; 
@@ -20,8 +20,29 @@ function ChatScreen({contractAddress}) {
   const endOfMessages = useRef();
 
   useEffect(() => {
-    const db = getFirestore(app);
-    const collRef = collection(db, `chats/${contractAddress}/messages`);
+    let app, firebaseConfig, db;
+  // Your web app's Firebase configuration
+  fetch(process.env.NEXT_PUBLIC_CREDENTIALS)
+  .then(result => result.json())
+  .then(data => {
+
+  firebaseConfig = {
+    apiKey: data.apiKey,
+    authDomain: data.authDomain,
+    projectId: data.projectId,
+    storageBucket: data.storageBucket,
+    messagingSenderId: data.messagingSenderId,
+    appId: data.appId
+  };
+
+if(app) {
+    app
+} else {
+    app = initializeApp(firebaseConfig);
+}
+db = getFirestore(app);
+
+const collRef = collection(db, `chats/${contractAddress}/messages`);
     const messList = query(collRef, orderBy("timeStamp", "asc"));
     const unsubscribe =  async () => {
         onSnapshot(messList, (snapShot) => {
@@ -38,7 +59,10 @@ function ChatScreen({contractAddress}) {
         })
     }
     unsubscribe();
-  }, [app])
+})
+    
+    
+  }, [])
 
   const sendMessage = async (e) => {
     e.preventDefault()
