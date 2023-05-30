@@ -62,8 +62,8 @@ const collRef = collection(db, `chats/${contractAddress}/messages`);
         })
     }
     unsubscribe();
-    console.log(db);
 })
+.catch(error => console.log(error));
     
     
   }, [])
