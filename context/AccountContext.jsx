@@ -14,6 +14,7 @@ export const AccountContextProvider = ({children}) => {
 
   const [currentAccount, setCurrentAccount] = useState()
   const [currentContract, setCurrentContract] = useState()
+  const [redFlagMsg, setRedFlagMsg] = useState("")
 
   useEffect(() => {
     isWalletConnected()
@@ -30,8 +31,15 @@ export const AccountContextProvider = ({children}) => {
     if(!window.ethereum) return
     const accounts = await window.ethereum.request({method: "eth_accounts"})
     setCurrentAccount(accounts[0])
-    console.log("isWalletConnected: ",accounts[0])
-    // updateEthers()
+    
+    window.ethereum.on("chainChanged", (chainId) => {
+      window.location.reload();
+    });
+
+    window.ethereum.on("accountsChanged", async () => {
+      await isWalletConnected();   
+    });
+    
   }
 
   const getCurrentContract = () => {
@@ -51,7 +59,14 @@ export const AccountContextProvider = ({children}) => {
     return txContract
   }
 
-  const data = {currentAccount, connectWallet, isWalletConnected, getCurrentContract, getTxContract }
+  const cautionMsg = (_msg) => {
+    setRedFlagMsg(_msg)
+    setTimeout(() => {
+      setRedFlagMsg("")
+    }, "3000")
+  }
+
+  const data = {currentAccount, connectWallet, isWalletConnected, getCurrentContract, getTxContract, cautionMsg, redFlagMsg }
 
   return(
     <AccountContext.Provider value = {data}>

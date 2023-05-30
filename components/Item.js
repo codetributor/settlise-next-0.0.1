@@ -2,8 +2,11 @@ import { ethers, BigNumber } from "ethers";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useMoralis } from 'react-moralis';
+import {UserContext} from '../context/AccountContext'   // Mod1
 
 function Item({address, type, isAccount, userAddress}) {
+
+  const { currentAccount } = UserContext() // Mod2
 
   const [ ipfs, setIpfs] = useState("");
   const [ item, setItem] = useState("");
@@ -478,6 +481,14 @@ function Item({address, type, isAccount, userAddress}) {
       
     } 
   }, [address, priceFeed])
+
+  // mod3
+  let url
+  if(!currentAccount){
+    url = "/"
+  } else{
+    url = `/listing/${address}`
+  }
   
   if(!price || !item || !ipfs || !seller || !address || !priceFeed || !dollarPrice) return
    
@@ -515,7 +526,9 @@ function Item({address, type, isAccount, userAddress}) {
       }
     } else {
       return (
-        <Link href={`/listing/${address}`}>
+        // mod4
+        // <Link href={`/listing/${address}`}>
+        <Link href={url}> 
         <div className={`flex flex-col card hover:scale-105 transition-all ${bgCard} ${bgCardHover} duration-150 ease-out`}>
         <div className="flex justify-center">
         <img className="h-64 w-64" height={300} widht={300} src={ipfs} alt="papareact icon" />
