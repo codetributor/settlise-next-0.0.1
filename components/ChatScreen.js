@@ -16,8 +16,8 @@ function ChatScreen({contractAddress}) {
   const [ image, setImage ] = useState(null);
   const [ imageInput, setImageInput ] = useState(null);
   const [ imageSrc, setImageSrc ] = useState("");
-  
-  let app, db;
+  const [ app, setApp ] = useState(null);
+  const [ db, setDb] = useState(null)
 
   const endOfMessages = useRef();
 
@@ -40,9 +40,11 @@ function ChatScreen({contractAddress}) {
 if(app) {
     app
 } else {
-    app = initializeApp(firebaseConfig);
+    initializedApp = initializeApp(firebaseConfig);
+    setApp(initializeApp);
 }
-    db = getFirestore(app);
+    initializedDb = getFirestore(app);
+    setDb(initializedDb);
 
 const collRef = collection(db, `chats/${contractAddress}/messages`);
     const messList = query(collRef, orderBy("timeStamp", "asc"));
