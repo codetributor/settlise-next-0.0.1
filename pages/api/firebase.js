@@ -1,4 +1,5 @@
 export default function handler(req, res) {
+    res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify({ 
         apiKey: process.env.API_KEY,
         authDomain: process.env.AUTH_DOMAIN,
