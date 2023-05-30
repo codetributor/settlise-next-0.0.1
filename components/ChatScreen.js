@@ -36,7 +36,7 @@ function ChatScreen({contractAddress}) {
         })
     }
     unsubscribe();
-  }, [])
+  }, [db])
 
   const sendMessage = async (e) => {
     e.preventDefault()
