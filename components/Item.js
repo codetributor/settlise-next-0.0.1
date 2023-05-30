@@ -495,7 +495,9 @@ function Item({address, type, isAccount, userAddress}) {
     if(isAccount) {
       if(type == "seller") {
         if(userAddress === seller) {
-          return( <Link href={`/listing/${address}`}>
+          return( 
+          // <Link href={`/listing/${address}`}>
+          <Link href={url}> 
           <div className={`flex flex-col card hover:scale-105 transition-all ${bgCard} ${bgCardHover} duration-150 ease-out`}>
           <div className="flex justify-center">
           <img className="h-64 w-64" height={300} widht={300} src={ipfs} alt="papareact icon" />
@@ -510,7 +512,9 @@ function Item({address, type, isAccount, userAddress}) {
         }
       } else {
         if(userAddress === buyer) {
-          return( <Link href={`/listing/${address}`}>
+          return( 
+          // <Link href={`/listing/${address}`}>
+          <Link href={url}> 
           <div className={`flex flex-col card hover:scale-105 transition-all ${bgCard} ${bgCardHover} duration-150 ease-out`}>
           <div className="flex justify-center">
           <img className="h-64 w-64" height={300} widht={300} src={ipfs} alt="papareact icon" />
